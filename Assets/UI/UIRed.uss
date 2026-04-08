@@ -1,0 +1,15 @@
+:root {
+}
+
+.contenedor {
+    align-items: center;
+}
+
+.boton {
+}
+
+.resultado {
+    width: 640px;
+    height: 500px;
+    font-size: 24px;
+}
