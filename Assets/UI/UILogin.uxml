@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UILogin.uss?fileID=7433441132597879392&amp;guid=63edf40406b3d8047b43cee6a18a9655&amp;type=3#UILogin"/>
+    <ui:VisualElement name="Contenedor" class="contenedor" style="flex-grow: 1;">
+        <ui:Label text="Login" name="Titulo" class="titulo" style="font-size: 128px; -unity-font-style: bold; color: rgb(255, 255, 255); -unity-text-align: middle-center; justify-content: flex-start; align-items: center; align-content: center; align-self: center;"/>
+        <ui:TextField label="Usuario:" placeholder-text="Escribir Usuario" name="inputUser" class="user" style="width: 1129px; height: auto; font-size: 72px; top: -50px; color: rgb(0, 0, 0);"/>
+        <ui:TextField label="Contraseña:" placeholder-text="Escribir Contraseña" name="inputPass" password="true" class="pass" style="font-size: 72px; width: 1269px; color: rgb(0, 0, 0);"/>
+        <ui:Button text="Login" name="btnLogin" class="boton" style="font-size: 72px; -unity-font-style: bold; -unity-text-align: middle-center; width: 400px; height: 150px; background-color: rgba(188, 188, 188, 0); background-image: url(&quot;project://database/Assets/Images/button_150.png?fileID=2800000&amp;guid=90ae5f656543bf042ad52992f42e92a0&amp;type=3#button_150&quot;); -unity-background-image-tint-color: rgb(255, 235, 4); background-size: 100% 100%; transition-timing-function: ease-in-out; transition-duration: 0.35s; scale: 1.15 1.15; border-left-color: rgba(26, 17, 17, 0); border-right-color: rgba(26, 17, 17, 0); border-top-color: rgba(26, 17, 17, 0); border-bottom-color: rgba(26, 17, 17, 0);"/>
+        <ui:Label text="" name="lblMensaje" class="msg" style="font-size: 72px; color: rgb(255, 0, 0); align-content: flex-end; justify-content: flex-end; top: 100px;"/>
+    </ui:VisualElement>
+</ui:UXML>
