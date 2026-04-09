@@ -1,56 +1,118 @@
+using System.Collections;
+using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
 public class LoginManager : MonoBehaviour
 {
-    // Referencias a los elementos de la UI
     private TextField inputUser;
     private TextField inputPass;
     private Label mensaje;
     private Button boton;
+    private string loginURL = "http://localhost:3000/login";
+
+    // Para guardar el userId si el login sale bien
+    public static int userIdActual = -1;
+
+    [System.Serializable]
+    public class LoginRequest
+    {
+        public string username;
+        public string password;
+    }
+
+    [System.Serializable]
+    public class LoginResponse
+    {
+        public bool success;
+        public string message;
+        public int userId;
+    }
 
     void Start()
     {
-        // Obtenemos el UI Documen
         var root = GetComponent<UIDocument>().rootVisualElement;
 
-        // Buscamos los elementos por nombre (los que pusiste en UI Builder)
-        inputUser = root.Q<TextField>("inputUser"); // Busca el elemento en la UI por su nombre
-        inputPass = root.Q<TextField>("inputPass"); // Busca el elemento en la UI por su nombre
-        mensaje = root.Q<Label>("lblMensaje"); // Busca el elemento en la UI por su nombre
-        boton = root.Q<Button>("btnLogin"); // Busca el elemento en la UI por su nombre
+        inputUser = root.Q<TextField>("inputUser");
+        inputPass = root.Q<TextField>("inputPass");
+        mensaje = root.Q<Label>("lblMensaje");
+        boton = root.Q<Button>("btnLogin");
 
-        // Cuando se presiona el botón, ejecuta la función Login
-        boton.clicked += Login;
+        boton.clicked += OnLoginClicked;
     }
 
-    void Login()
+    void OnDestroy()
     {
-        // Guardamos lo que escribió el usuario
-        string user = inputUser.value;
+        if (boton != null)
+            boton.clicked -= OnLoginClicked;
+    }
+
+    void OnLoginClicked()
+    {
+        string user = inputUser.value.Trim();
         string pass = inputPass.value;
 
-        // Validación: si están vacíos
-        if(user == "" || pass == "")
+        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
         {
             mensaje.text = "Campos vacíos";
             return;
         }
 
-        // Aquí aún no mandamos al servidor (eso es persona 2)
-        // Solo mostramos en consola
+        StartCoroutine(EnviarLogin(user, pass));
+    }
 
-        Debug.Log("Usuario: " + user);
-        Debug.Log("Password: " + pass);
+    IEnumerator EnviarLogin(string user, string pass)
+    {
+        mensaje.text = "Conectando...";
+        boton.SetEnabled(false);
 
-        // Simulación de éxito (para probar)
-        if(user == "admin" && pass == "123")
+        LoginRequest datos = new LoginRequest
         {
-            mensaje.text = "Login correcto";
-        }
-        else
+            username = user,
+            password = pass
+        };
+
+        string json = JsonUtility.ToJson(datos);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+
+        using (UnityWebRequest request = new UnityWebRequest(loginURL, "POST"))
         {
-            mensaje.text = "Datos incorrectos";
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();
+
+            boton.SetEnabled(true);
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                mensaje.text = "Error de conexión: " + request.error;
+                yield break;
+            }
+
+            string respuestaJson = request.downloadHandler.text;
+            Debug.Log("Respuesta del servidor: " + respuestaJson);
+
+            LoginResponse respuesta = JsonUtility.FromJson<LoginResponse>(respuestaJson);
+
+            if (respuesta == null)
+            {
+                mensaje.text = "Respuesta inválida del servidor";
+                yield break;
+            }
+
+            if (respuesta.success)
+            {
+                userIdActual = respuesta.userId;
+                mensaje.text = "Login correcto";
+                yield return new WaitForSeconds(0.5f);
+            }
+            else
+            {
+                mensaje.text = respuesta.message;
+            }
         }
     }
 }
