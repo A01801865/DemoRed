@@ -1,19 +1,22 @@
-CREATE DATABASE game_db;
+CREATE DATABASE IF NOT EXISTS game_db;
 USE game_db;
 
-CREATE TABLE users (
+-- =========================
+-- TABLA DE USUARIOS
+-- =========================
+CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(50) NOT NULL,
-  password VARCHAR(50) NOT NULL
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE sessions (
+-- =========================
+-- TABLA DE SESIONES
+-- =========================
+CREATE TABLE IF NOT EXISTS sessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   login_time DATETIME,
   logout_time DATETIME,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-INSERT INTO users (username, password)
-VALUES ('admin', '1234');
