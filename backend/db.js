@@ -1,17 +1,17 @@
 const mysql = require("mysql2");
 
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Bolo1Robin", // ← pon tu contraseña real
+  host: "game-db.c4wm7o9edpvc.us-east-1.rds.amazonaws.com",
+  user: "admin",
+  password: "supernumberland",
   database: "game_db"
 });
 
 connection.connect((err) => {
   if (err) {
-    console.error("Error de conexión:", err);
+    console.error("Error conectando:", err);
   } else {
-    console.log("Conectado a MySQL");
+    console.log("Conectado a AWS RDS");
   }
 });
 
