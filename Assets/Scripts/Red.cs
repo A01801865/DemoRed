@@ -4,12 +4,17 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+using System.Text;
 
 public class Red : MonoBehaviour
 {
     private Button btnLeer;
+    private Button btnLogout;
     private TextField tfResultado;
     private DropdownField opciones;
+
+    private string logoutURL = "http://localhost:3000/logout";
 
     //Estructura para guardar el horóscopo
     public struct Horoscopo
@@ -26,6 +31,12 @@ public class Red : MonoBehaviour
         public int userId;
     }
 
+    //Estructura para logout
+    public struct LogoutData
+    {
+        public int userId;
+    }
+
     void OnEnable()
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
@@ -33,8 +44,16 @@ public class Red : MonoBehaviour
         opciones = root.Q<DropdownField>("Opciones");
 
         btnLeer = root.Q<Button>("BotonLeer");
+        btnLogout = root.Q<Button>("btnLogout");
 
         btnLeer.clicked += LeerTextoPlano;
+        btnLogout.clicked += Logout;
+    }
+
+    void OnDisable()
+    {
+        btnLeer.clicked -= LeerTextoPlano;
+        btnLogout.clicked -= Logout;
     }
 
     private void LeerTextoPlano()
@@ -43,6 +62,7 @@ public class Red : MonoBehaviour
         StartCoroutine( SubirJson() );
         //Regresa de inmediato
     }
+
     //Subir JSON
     private IEnumerator SubirJson()
     {
@@ -56,8 +76,16 @@ public class Red : MonoBehaviour
         string datosJson = JsonUtility.ToJson(p);
         print("JSON " + p);
 
-        UnityWebRequest request = UnityWebRequest.Post("https://jsonplaceholder.typicode.com/posts",
-                                                        datosJson, "application/json");
+        UnityWebRequest request = new UnityWebRequest(
+            "https://jsonplaceholder.typicode.com/posts",
+            "POST"
+        );
+
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(datosJson);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
         yield return request.SendWebRequest();
 
         //Después de CIERTO tiempo continúa
@@ -65,6 +93,7 @@ public class Red : MonoBehaviour
         {
             string textoPlano = request.downloadHandler.text;
             tfResultado.value = textoPlano;
+
             //Convertir en JSON
             Horoscopo h = JsonUtility.FromJson<Horoscopo>(textoPlano);
             tfResultado.value = "Fecha: " + h.date +"\n\n"
@@ -79,9 +108,7 @@ public class Red : MonoBehaviour
         request.Dispose(); //Libera el objeto
     }
 
-
-
-//Descarga JSON
+    //Descarga JSON
     private IEnumerator DescargarTextoPlano()
     {
         string signo = opciones.choices[opciones.index];
@@ -93,6 +120,7 @@ public class Red : MonoBehaviour
         {
             string textoPlano = request.downloadHandler.text;
             tfResultado.value = textoPlano;
+
             //Convertir en JSON
             Horoscopo h = JsonUtility.FromJson<Horoscopo>(textoPlano);
             tfResultado.value = "Fecha: " + h.date +"\n\n"
@@ -105,5 +133,45 @@ public class Red : MonoBehaviour
         }
 
         request.Dispose(); //Libera el objeto
+    }
+
+    //Logout
+    void Logout()
+    {
+        StartCoroutine( EnviarLogout() );
+    }
+
+    //Enviar JSON logout
+    private IEnumerator EnviarLogout()
+    {
+        LogoutData data = new LogoutData
+        {
+            userId = LoginManager.userIdActual
+        };
+
+        string datosJson = JsonUtility.ToJson(data);
+
+        UnityWebRequest request = new UnityWebRequest(logoutURL, "POST");
+
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(datosJson);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        //Después de CIERTO tiempo continúa
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Error logout: " + request.error);
+        }
+
+        request.Dispose(); //Libera el objeto
+
+        //Limpiar sesión
+        LoginManager.userIdActual = -1;
+
+        //Regresar a login
+        SceneManager.LoadScene("Login");
     }
 }

@@ -6,6 +6,12 @@
 }
 
 .boton {
+    background-image: url("project://database/Assets/Images/button_150.png?fileID=2800000&guid=90ae5f656543bf042ad52992f42e92a0&type=3#button_150");
+    background-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
 }
 
 .resultado {

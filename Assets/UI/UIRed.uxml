@@ -2,7 +2,8 @@
     <Style src="project://database/Assets/UI/UIRed.uss?fileID=7433441132597879392&amp;guid=7429d3d39af5e3240b2ef3388acb5081&amp;type=3#UIRed"/>
     <ui:VisualElement name="Contenedor" class="contenedor" style="flex-grow: 1;">
         <ui:Button text="Descargar datos" name="BotonLeer" class="boton" style="font-size: 28px; margin-top: 32px; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
-        <ui:DropdownField label="Selecciona tu signo" name="Opciones" choices="pisces,aries,taurus" index="0"/>
+        <ui:DropdownField label="Selecciona tu signo" name="Opciones" choices="pisces,aries,taurus" index="0" style="background-image: none;"/>
         <ui:TextField label="Datos recibidos" placeholder-text="filler text" name="Resultado" multiline="true" vertical-scroller-visibility="Auto" class="resultado" style="flex-direction: column;"/>
+        <ui:Button text="Logout" name="btnLogout" class="boton" style="align-items: center; font-size: 34px; margin-top: 100px;"/>
     </ui:VisualElement>
 </ui:UXML>

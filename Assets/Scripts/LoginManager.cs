@@ -3,6 +3,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class LoginManager : MonoBehaviour
 {
@@ -108,6 +109,7 @@ public class LoginManager : MonoBehaviour
                 userIdActual = respuesta.userId;
                 mensaje.text = "Login correcto";
                 yield return new WaitForSeconds(0.5f);
+                SceneManager.LoadScene("SampleScene");
             }
             else
             {
